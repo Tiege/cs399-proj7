@@ -14,6 +14,9 @@ import arrow # Replacement for datetime, based on moment.js
 import datetime # But we still need time
 from dateutil import tz  # For interpreting local times
 
+# Mongo database
+from pymongo import MongoClient
+#from bson import ObjectId
 
 # OAuth2  - Google library implementation for convenience
 from oauth2client import client
@@ -21,6 +24,16 @@ import httplib2   # used in oauth2 flow
 
 # Google API for services 
 from apiclient import discovery
+
+#Establish our mongo database connection
+try: 
+    dbclient = MongoClient(CONFIG.MONGO_URL)
+    db = dbclient.meet
+    #collection = db.dated
+
+except:
+    print("Failure opening database.  Is Mongo running? Correct password?")
+    sys.exit(1)
 
 ###
 # Globals
@@ -88,6 +101,14 @@ def choose():
             BUSY_RECORDS = freebusyQuery.execute()
             busy.append(BUSY_RECORDS.get("calendars", {}).get(item, {}).get("busy"))
 
+    free = getFreeTime(busy)
+    
+    ###ADD FREE TIMES TO DB HERE
+    meeting_proposal = { "id" : "meeting_proposal",
+                         "times" : free }
+
+    db.insert(meeting_proposal)
+
     #app.logger.debug("Returned from get_gcal_service")
     flask.session['calendars'] = list_calendars(gcal_service)
     
@@ -96,7 +117,7 @@ def choose():
     if not busy:
         return flask.redirect(flask.url_for("index"))
     else:
-        return jsonify(busyT=busy)
+        return jsonify(busyT=free)
 
 ####
 #
@@ -301,6 +322,33 @@ def next_day(isotext):
 #  Functions (NOT pages) that return some information
 #
 ####
+
+def getFreeTime(busy):
+    freeTime = [ ]
+    print(len(busy))
+    busyFlag = [False] * (8)
+    rangeStart = arrow.get(flask.session['begin_date']).timestamp
+    rangeEnd = arrow.get(flask.session['end_date']).timestamp
+    
+    for x in range(rangeStart, rangeEnd):
+        if (x % 900 == 0): #check intervals of 900 sec = 15 min
+            for b in busy:
+                for index, s in enumerate(b):
+                    if ( x == arrow.get(b[index]['start']).timestamp ):
+                        busyFlag[index] = True
+                    if ( x == arrow.get(b[index]['end']).timestamp ):
+                        busyFlag[index] = False
+
+            free = True
+            for c in busyFlag:
+                if ( c == True ):
+                    free = False
+                    break
+
+            if ( free == True ):
+                freeTime.append(arrow.get(x).format('MM-DD-YYYY HH:mm'))
+
+    return freeTime
   
 def list_calendars(service):
     """

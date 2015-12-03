@@ -34,15 +34,10 @@
 <!--Display the busy times from ALL calendars selected that fall
 within the range given by user in 'daterange'-->
 <!--There is no distrinction made from which calendar a busy time starts and ends-->
-<h1>Busy times</h1>
-<div><u>Displaying selected calendars</u></div>
+<h1>Free times</h1>
+<div><u>Displaying free times from selected calendars in increments of 15 min:</u></div>
 <div class="container">
-<span style="float: left; margin-right:75px;">START:</span>
-<span style="float: left;">END:</span>
-</div>
-<div class="container">
-<span class="start" style="float: left; margin-right:50px;"></span>
-<span class="end" style="float: left;"></span>
+<span class="free" style="float: left; margin-right:50px;"></span>
 </div>
 
 <h2>Date range</h2>
@@ -86,7 +81,7 @@ within the range given by user in 'daterange'-->
           </div> <div class="row">
          {% endif %}
   {% endfor %}
-<button type="button" onclick="chosen()">Show Busy Times</button>
+<button type="button" onclick="chosen()">Show Free Times</button>
   </div>
 {% endif %}
 
@@ -117,50 +112,9 @@ within the range given by user in 'daterange'-->
         $.getJSON($SCRIPT_ROOT + '/choose',
             { selected: chosenCal },
 		/*Mediocre method function to retrieve start/end times 			from our returned request JSON object and send to doc*/
-                function(times) { 
-		    //convert JSONified object into string
-                    busyT = JSON.stringify({ 'busy': times.busyT });
-                        
-		    //variables to help us with our scanner
-		    var start = end = [];
-		    var scan = startBusy = false;
-		
-		    //Scan through returned string to extract start/end
-		    //busy times and seperate for display
-		    for (x in busyT) {
-				
-		        if (busyT[x] == ':' && (busyT[x-2] == "d" 						|| busyT[x-2] == "t")){
-			    //begin scan
-			    scan = true;
-			    //set state to scan in start or end	
-			    if (busyT[x-2] == "d"){
-				startBusy = false;}
-			    else {
-				startBusy = true;}
-			    //move scanner to skip over ':"'
-			    x = x + 2;
-			    }
-
-			    //scan end times
-			    if (scan && busyT[x] !='"' && !startBusy){ 
-				end.push(busyT[x]); }
-			    //scan start times
-			    if (scan && busyT[x] !='"' && startBusy){ 
-				start.push(busyT[x]); }
-			    //stop scanning
-			    if (busyT[x] == 'Z' && scan){
-				scan = false; }  
-		    }
-		    //Replace 'Z' and 'T' in string with newline
-		    for (x in start) {
-		        if ( start[x] == 'Z' || start[x] == 'T'){
-		            start[x] = "<br>"; }
-		        if ( end[x] == 'Z' || end[x] == 'T'){
-			    end[x] = "<br>"; }		
-		    }
-		    //Display start/end busy times
-		    $(".start").html(start);
-		    $(".end").html(end);
+                function(times) {
+		   freeTimes = JSON.stringify({ 'free': times.busyT });
+		   $(".free").html(freeTimes);
 	}); // end getJSON call
     }
                   
