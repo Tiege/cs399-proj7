@@ -102,12 +102,6 @@ def choose():
             busy.append(BUSY_RECORDS.get("calendars", {}).get(item, {}).get("busy"))
 
     free = getFreeTime(busy)
-    
-    ###ADD FREE TIMES TO DB HERE
-    meeting_proposal = { "id" : "meeting_proposal",
-                         "times" : free }
-
-    db.insert(meeting_proposal)
 
     #app.logger.debug("Returned from get_gcal_service")
     flask.session['calendars'] = list_calendars(gcal_service)
