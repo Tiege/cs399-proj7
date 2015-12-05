@@ -14,26 +14,12 @@ import arrow # Replacement for datetime, based on moment.js
 import datetime # But we still need time
 from dateutil import tz  # For interpreting local times
 
-# Mongo database
-from pymongo import MongoClient
-#from bson import ObjectId
-
 # OAuth2  - Google library implementation for convenience
 from oauth2client import client
 import httplib2   # used in oauth2 flow
 
 # Google API for services 
 from apiclient import discovery
-
-#Establish our mongo database connection
-try: 
-    dbclient = MongoClient(CONFIG.MONGO_URL)
-    db = dbclient.meet
-    #collection = db.dated
-
-except:
-    print("Failure opening database.  Is Mongo running? Correct password?")
-    sys.exit(1)
 
 ###
 # Globals
