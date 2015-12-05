@@ -64,4 +64,4 @@ def test_errorRange():
 #check if we get expected error from google by sending a starting date that is after the ending date
     testcalService = get_cal_service(flask.session['credentials'])
     testFBQ = { "timeMin" : "2015-11-02T00:00:00Z", "timeMax" : "2015-11-01T00:00:00Z", items: [{ "id" : "test" }] }
-    assert(!testcalService.freebusy().query(body = testFBQ))
+    assert ( testcalService.freebusy().query(body = testFBQ).execute() == NULL)
