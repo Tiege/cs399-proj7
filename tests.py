@@ -33,7 +33,7 @@ def test_busyResponse1():
     testcalService = get_cal_service(flask.session['credentials'])
     testFBQ = { "timeMin" : "2015-11-01T00:00:00Z", "timeMax" : "2015-11-01T00:00:00Z", items: [{ "id" : "test" }] }
     testRecords = testcalService.freebusy().query(body = testFBQ).execute()
-    assert (len(testRecords.get("calendars", {}).get(item, {}).get("busy"))) == 0)
+    assert (len(testRecords.get("calendars", {}).get(item, {}).get("busy")) == 0)
 
 def test_busyResponse2():
 #Test the response we get from google for our freebusy query
@@ -41,7 +41,7 @@ def test_busyResponse2():
     testcalService = get_cal_service(flask.session['credentials'])
     testFBQ = { "timeMin" : "2015-11-01T00:00:00Z", "timeMax" : "2015-11-02T00:00:00Z", items: [{ "id" : "test" }] }
     testRecords = testcalService.freebusy().query(body = testFBQ).execute()
-    assert (len(testRecords.get("calendars", {}).get(item, {}).get("busy"))) <= (60 * 60 * 24))
+    assert (len(testRecords.get("calendars", {}).get(item, {}).get("busy")) <= (60 * 60 * 24))
 
 def test_busyStart():
 #Test the response we get from google for our freebusy query
@@ -49,7 +49,7 @@ def test_busyStart():
     testcalService = get_cal_service(flask.session['credentials'])
     testFBQ = { "timeMin" : "2015-11-01T00:00:00Z", "timeMax" : "2015-11-02T00:00:00Z", items: [{ "id" : "test" }] }
     testRecords = testcalService.freebusy().query(body = testFBQ).execute()
-    assert (arrow.get(testRecords.get("calendars", {}).get(item, {}).get("busy"))[0]).timestamp() >= arrow.get("2015-11-01T00:00:00Z").timestamp())
+    assert (arrow.get(testRecords.get("calendars", {}).get(item, {}).get("busy")[0]).timestamp() >= arrow.get("2015-11-01T00:00:00Z").timestamp())
 
 def test_busyEnd():
 #Test the response we get from google for our freebusy query
@@ -57,7 +57,7 @@ def test_busyEnd():
     testcalService = get_cal_service(flask.session['credentials'])
     testFBQ = { "timeMin" : "2015-11-01T00:00:00Z", "timeMax" : "2015-11-02T00:00:00Z", items: [{ "id" : "test" }] }
     testRecords = testcalService.freebusy().query(body = testFBQ).execute()
-    assert (arrow.get(testRecords.get("calendars", {}).get(item, {}).get("busy"))[len(testRecords.get("calendars", {}).get(item, {}).get("busy"))) - 1]).timestamp() <= arrow.get("2015-11-02T00:00:00Z").timestamp())
+    assert (arrow.get(testRecords.get("calendars", {}).get(item, {}).get("busy")[len(testRecords.get("calendars", {}).get(item, {}).get("busy"))) - 1]).timestamp() <= arrow.get("2015-11-02T00:00:00Z").timestamp())
 
 def test_errorRange():
 #Test the response we get from google for our freebusy query
