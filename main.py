@@ -326,7 +326,7 @@ def getFreeTime(busy):
                     break
 
             if ( free == True ):
-                freeTime.append(arrow.get(x).format('MM-DD-YYYY HH:mm'))
+                freeTime.append(arrow.get(x).to('US/Pacific').format('MM-DD-YYYY HH:mm'))
 
     return freeTime
   
